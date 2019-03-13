@@ -11,11 +11,11 @@ class indexController extends grace{
 		//your code ......
 	}
 	*/
+	
 	public function index(){
-		//系统会自动调用视图 index_index.php
+		
+		// 系统会自动调用视图 index_index.php
+		// your code
 	}
 	
-	public function test(){
-		
-	}
 }

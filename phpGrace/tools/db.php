@@ -310,4 +310,9 @@ class db{
 	public function rollback(){
 		$this->pdo->rollback();
 	}
+	
+	public function debugSql(){
+		echo '<script>console.log("phpGrace log : sql 命令 : '.$this->sql.'");</script>';
+	}
+	
 }
