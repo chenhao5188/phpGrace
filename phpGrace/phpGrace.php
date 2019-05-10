@@ -433,24 +433,6 @@ function pgRunLog(){
 		', 方法 : '.PG_M.' - 运行时间 : '. $cost[0] .'毫秒, 占用内存 : ' . $cost[1] .'k");</script>';
 }
 
-//工具实例化函数( 适用于不能使用命名空间的工具类 )
-function tool($toolName){
-	static $staticTools = array();
-	if(empty($staticTools[$toolName])){
-		$fileUri = PG_IN.PG_TOOLS.PG_DS.$toolName.'.php';
-		if(!is_file($fileUri)){throw new pgException("类文件 {$toolName} 不存在");}
-		include $fileUri;
-		$staticTools[$toolName] = 1;
-	}
-	$arguments = func_get_args();
-	$className = array_shift($arguments);
-	$keys = array_keys($arguments);
-	array_walk($keys, create_function('&$value, $key, $prefix', '$value = $prefix . $value;'), '$arg_');
-	$paramStr = implode(', ',$keys);
-	$newClass = create_function($paramStr, "return new {$className}({$paramStr});");
-	return call_user_func_array($newClass, $arguments);
-}
-
 //基础模型
 class graceModel{
 	public $tableName    = null;
