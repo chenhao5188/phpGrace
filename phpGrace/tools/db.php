@@ -24,11 +24,21 @@ class db{
 	public $conf;
 	
 	public function __construct($conf){
+		if(empty($conf['databaseType'])){$conf['databaseType'] = 'mysql';}
 		$this->conf = $conf;
-		try{$this->pdo  = new \PDO("mysql:host={$conf['host']};port={$conf['port']};dbname={$conf['dbname']}", $conf['user'], $conf['pwd']);
-			$this->pdo->query("set names {$conf['charset']}");
+		try{
+			switch($this->conf['databaseType']){
+				case "sqlsrv":
+				$this->pdo  = new \PDO("{$conf['databaseType']}:Server={$conf['host']},{$conf['port']};Database={$conf['dbname']}", $conf['user'], $conf['pwd']);
+				break;
+				case "mysql":
+				$this->pdo  = new \PDO("mysql:host={$conf['host']};port={$conf['port']};dbname={$conf['dbname']}", $conf['user'], $conf['pwd']);
+				$this->pdo->query("set names {$conf['charset']}");
+				break;				
+			}			
 		}catch(Exception $e){throw new \pgException('数据库连接失败','请检查数据库相关配置');}
 	}
+	
 	
 	public function __clone(){
 		$this->sql = null;
@@ -69,9 +79,9 @@ class db{
 	public function add($data = null){
 		if(empty($data)){$data = $_POST;}
 		if(!is_array($data)){throw new \pgException('插入数据错误','插入数据应为一个一维数组');}
-		$this->sql   = "insert into `$this->tableName` (";
+		$this->sql   = "insert into $this->tableName (";
 		$fields      = array(); $placeHolder = array(); $insertData  = array();
-		foreach ($data as $k => $v){$fields[] = "`$k`"; $placeHolder[] = "?"; $insertData[] = $v;}
+		foreach ($data as $k => $v){$fields[] = "$k"; $placeHolder[] = "?"; $insertData[] = $v;}
 		$this->sql .= implode(', ', $fields).') values ('.implode(', ', $placeHolder).');';
 		$this->pretreatment = $this->pdo->prepare($this->sql);
 		$this->pretreatment->execute($insertData);
@@ -81,7 +91,7 @@ class db{
 	public function delete(){
 		if(empty($this->where)){throw new \pgException('请使用模型对象的where()函数设置删除条件');}
 		$where              = $this->getWhere();
-		$this->sql          = "delete from `$this->tableName` {$where[0]};";
+		$this->sql          = "delete from $this->tableName {$where[0]};";
 		$this->pretreatment = $this->pdo->prepare($this->sql);
 		return $this->pretreatment->execute($where[1]);
 	}
@@ -91,9 +101,9 @@ class db{
 		if(empty($data) || !is_array($data)){throw new \pgException('update($data) 函数的参数应该为一个一维数组');}
 		if(empty($this->where)){throw new pgException('请使用模型对象的 where() 方法设置更新条件');}
 		$where = $this->getWhere();
-		$this->sql   = "update `{$this->tableName}` set ";
+		$this->sql   = "update {$this->tableName} set ";
 		$updateData  = array();
-    	foreach ($data as $k => $v){$this->sql .= "`$k` = ?, "; $updateData[] = $v;}
+    	foreach ($data as $k => $v){$this->sql .= "$k = ?, "; $updateData[] = $v;}
 		$this->sql   = substr($this->sql, 0,-2).$where[0].';';
 		$updateData  = array_merge($updateData, $where[1]);
 		$this->pretreatment = $this->pdo->prepare($this->sql);
@@ -102,7 +112,7 @@ class db{
 	
 	public function field($filedName, $addVal){
 		$addVal    = intval($addVal);
-		$this->sql = "update `{$this->tableName}` set `{$filedName}` = `{$filedName}` + {$addVal}";
+		$this->sql = "update {$this->tableName} set {$filedName} = {$filedName} + {$addVal}";
 		$where     = $this->getWhere(); $this->sql .= $where[0].';'; return $this->query($this->sql, $where[1]);
 	}
 	
@@ -241,7 +251,7 @@ class db{
     }
     
 	public function count(){
-		$this->sql = "select count(*) as `total` from `$this->tableName` ";
+		$this->sql = "select count(*) as total from $this->tableName ";
 		$where = $this->getWhere(); $this->sql.= $where[0].';';
 		$this->query($this->sql, $where[1]);
 		$return = $this->pretreatment->fetch();
@@ -250,7 +260,7 @@ class db{
 	}
 	
 	public function max($field){
-		$this->sql = "select max(`$field`) as `max` from `$this->tableName`";
+		$this->sql = "select max($field) as max from $this->tableName";
 		$where = $this->getWhere(); $this->sql .= $where[0].';';
 		$this->query($this->sql, $where[1]);
 		$return = $this->pretreatment->fetch();
@@ -259,7 +269,7 @@ class db{
 	}
 	
 	public function min($field){
-		$this->sql = "select min(`$field`) as `min` from `$this->tableName`";
+		$this->sql = "select min($field) as min from $this->tableName";
 		$where = $this->getWhere(); $this->sql .= $where[0].';';
 		$this->query($this->sql, $where[1]);
 		$retutn = $this->pretreatment->fetch();
@@ -268,7 +278,7 @@ class db{
 	}
 	
 	public function avg($field){
-		$this->sql = "select avg(`$field`) as `avg` from `$this->tableName`";
+		$this->sql = "select avg($field) as avg from $this->tableName";
 		$where = $this->getWhere();
 		$this->sql .= $where[0].';';
 		$this->query($this->sql, $where[1]);
@@ -278,7 +288,7 @@ class db{
 	}
 	
 	public function sum($field){
-		$this->sql = "select sum(`$field`) as `sum` from `$this->tableName`";
+		$this->sql = "select sum($field) as sum from $this->tableName";
 		$where = $this->getWhere(); $this->sql .= $where[0].';';
 		$this->query($this->sql, $where[1]);
 		$return = $this->pretreatment->fetch();

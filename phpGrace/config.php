@@ -2,6 +2,7 @@
 return array(
 	//数据库配置
 	'db'                 => array(
+		'databaseType'   =>    'mysql',
     	'host'           =>    '127.0.0.1',
     	'port'           =>    '3306',
 		'user'           =>    'root',

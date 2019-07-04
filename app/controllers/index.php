@@ -16,6 +16,6 @@ class indexController extends grace{
 		
 		// 系统会自动调用视图 index_index.php
 		// your code
+		
 	}
-	
 }

@@ -113,6 +113,40 @@ function __pgAutoLoad($className){
 }
 spl_autoload_register('__pgAutoLoad');
 
+//工具实例化函数( 适用于不能使用命名空间的工具类 )
+function tool($args){
+	static $staticTools = array();
+	$arguments = func_get_args();
+	$className = array_shift($arguments);
+	$className = '\\'.$className;
+	if(empty($staticTools[$className])){
+		$fileUri = PG_IN.PG_TOOLS.PG_DS.$className.'.php';
+		if(!is_file($fileUri)){throw new pgException("类文件 {$toolName} 不存在");}
+		include $fileUri;
+		$staticTools[$className] = 1;
+	}
+	switch(count($arguments)){
+		case 0 :
+		return new $className();
+		break;
+		case 1 :
+		return new $className($arguments[0]);
+		break;
+		case 2 :
+		return new $className($arguments[0], $arguments[1]);
+		break;
+		case 3 :
+		return new $className($arguments[0], $arguments[1], $arguments[2]);
+		break;
+		case 4 :
+		return new $className($arguments[0], $arguments[1], $arguments[2], $arguments[3]);
+		break;
+		case 5 :
+		return new $className($arguments[0], $arguments[1], $arguments[2], $arguments[3], $arguments[4]);
+		break;
+	}
+}
+
 //base controller
 class grace{
 	public    $gets;
