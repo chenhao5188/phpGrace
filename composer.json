@@ -7,5 +7,6 @@
             "email": "5213606@qq.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "license": "Apache-2.0"
 }
