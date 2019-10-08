@@ -370,7 +370,7 @@ function lang($key){
 
 //路径解析
 function u($c, $m, $params = '', $page = null){
-	$suffix = defined('PG_SUFFIX') ? PG_SUFFIX : '/';
+	$suffix = PG_SUFFIX ? PG_SUFFIX : '/';
 	$page = $page != null ? '/page_'.$page : '';
 	if(is_array($params)){
 		return PG_SROOT.$c.'/'.$m.'/'.implode('/', $params).$page.$suffix;
@@ -492,7 +492,7 @@ try{
 	$includedFiles = get_included_files();
 	if(count($includedFiles) < 2){exit;}
 	header('content-type:text/html; charset=utf-8');
-	if(PG_SESSION_START){echo startSession();}
+	if(PG_SESSION_START){startSession();}
 	if(!is_dir(PG_PATH)){include PG_IN.'graceCreat.php'; graceCreateApp();}
 	$router = PG_Router();
 	$controllerName = $router[0];
