@@ -100,7 +100,7 @@ function db($tableName, $configName = 'db'){
 
 //model
 function model($modelName){
-	$modelName = 'phpGrace\\models\\'.$modelName;
+	$modelName = '\\phpGrace\\models\\'.$modelName;
 	$model = new $modelName();
 	return $model;
 }
@@ -463,8 +463,7 @@ function getToken(){
 function pgRunLog(){
 	if(!PG_DEBUG){return false;}
 	$cost = pgCost();
-	echo '<script>console.log("phpGrace Log : 控制器 : '.PG_C.
-		', 方法 : '.PG_M.' - 运行时间 : '. $cost[0] .'毫秒, 占用内存 : ' . $cost[1] .'k");</script>';
+	echo '<script>console.log("phpGrace Log '.date('Y-m-d H:i:s').':\n'.PG_C.'->'.PG_M.' - 运行时间:'. $cost[0] .'毫秒, 占用内存:' . $cost[1] .'k");</script>';
 }
 
 //基础模型
@@ -493,7 +492,7 @@ try{
 	if(count($includedFiles) < 2){exit;}
 	header('content-type:text/html; charset=utf-8');
 	if(PG_SESSION_START){startSession();}
-	if(!is_dir(PG_PATH)){include PG_IN.'graceCreat.php'; graceCreateApp();}
+	if(!is_dir(PG_PATH)){include PG_IN.'graceCreate.php'; graceCreateApp();}
 	$router = PG_Router();
 	$controllerName = $router[0];
 	$mode = '/^([a-z]|[A-Z]|[0-9])+$/Uis';
