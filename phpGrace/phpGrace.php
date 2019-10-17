@@ -121,7 +121,7 @@ function tool($args){
 	$className = '\\'.$className;
 	if(empty($staticTools[$className])){
 		$fileUri = PG_IN.PG_TOOLS.PG_DS.$className.'.php';
-		if(!is_file($fileUri)){throw new pgException("类文件 {$toolName} 不存在");}
+		if(!is_file($fileUri)){throw new pgException("类文件 {$className} 不存在");}
 		include $fileUri;
 		$staticTools[$className] = 1;
 	}
