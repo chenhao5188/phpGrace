@@ -296,7 +296,7 @@ function gracePOST($name, $value = ''){
 	return $_POST[$name];
 }
 
-//session 
+// session 
 function startSession(){
 	switch(PG_SESSION_TYPE){
 		case 'file' :
@@ -319,21 +319,35 @@ function startSession(){
 	session_write_close();
 }
 
-//设置 session
+// 设置 session
 function setSession($name, $val){
 	session_start();
-	$_SESSION[$name] = $val;
+	if(is_array($val)){
+		foreach($val as $k => $v){$_SESSION[$k] = $v;}
+	}else{
+		$_SESSION[$name] = $val;
+	}
 	session_write_close();
 }
 
-//获取 session
-function getSession($name){if(isset($_SESSION[$name])){return $_SESSION[$name];} return null;}
+// 获取 session
+function getSession($name){
+	if(isset($_SESSION[$name])){
+		return $_SESSION[$name];
+	} 
+	return null;
+}
 
-//销毁指定的session
+// 销毁指定的session
 function removeSession($name){
-	if(empty($_SESSION[$name])){return null;}
 	session_start();
-	unset($_SESSION[$name]);
+	if(is_array($name)){
+		foreach($name as $k){
+			if(isset($_SESSION[$k])){unset($_SESSION[$k]);}
+		}
+	}else{
+		if(isset($_SESSION[$name])){unset($_SESSION[$name]);}
+	}
 	session_write_close();
 }
 
