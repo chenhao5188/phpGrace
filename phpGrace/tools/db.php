@@ -303,7 +303,7 @@ class db{
 	}
 	
 	public function desc(){
-		$this->query('select ORDINAL_POSITION, Column_Name ,data_type, COLUMN_COMMENT 
+		$this->query('select ORDINAL_POSITION,COLUMN_NAME ,DATA_TYPE, COLUMN_COMMENT  
 		from information_schema.columns where table_schema = ? and table_name = ? 
 		order by ORDINAL_POSITION asc;', array($this->conf['dbname'], $this->tableName));
 		return $this->queryFetchAll();
